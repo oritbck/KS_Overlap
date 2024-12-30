@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תוכנית חניכה - מדריך חדר כושר</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Heebo', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 5px;
+            direction: rtl;
+            background-color: #f5f5f5;
+            padding-bottom: 60px;
+        }
+
+        .main-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .trainer-details {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .trainer-details input {
+            width: 100%;
+            padding: 5px;
+            margin: 3px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .trainer-details label {
+            display: block;
+            font-weight: bold;
+            margin-top: 8px;
+            color: #2c3e50;
+        }
+
+        .task-list {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .section-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .task-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .task-content {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .task-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .task-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .task-details {
+            font-size: 0.8rem;
+            color: #444;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 4px;
+            border-right: 3px solid #3498db;
+        }
+
+        .task-details ul {
+            margin: 3px 0;
+            padding-right: 15px;
+        }
+
+        .task-details li {
+            margin-bottom: 2px;
+        }
+
+        .timing {
+            font-size: 0.75rem;
+            color: #2c3e50;
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+
+        input[type="checkbox"]:checked + .task-content {
+            opacity: 0.6;
+        }
+
+        .progress-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #27ae60;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .completed-text {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .export-button {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .export-button:hover {
+            background-color: #219a52;
+        }
+
+        .signature-section {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .signature-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .signature-block {
+            text-align: center;
+            margin: 0 20px;
+        }
+
+        .signature-line {
+            margin-top: 10px;
+            width: 200px;
+            height: 80px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            position: relative;
+        }
+
+        .signature-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .clear-signature {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin-top: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .clear-signature:hover {
+            background: #c0392b;
+        }
+
+        h2 {
+            margin-top: 5px;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+                background: white;
+                font-size: 11pt;
+            }
+
+            .export-button, .progress-container, .clear-signature {
+                display: none !important;
+            }
+
+            .main-title {
+                margin: 0 0 15px 0;
+                padding: 15px 10px;
+                font-size: 18pt;
+                letter-spacing: 1.5px;
+                word-spacing: 6px;
+                border-bottom: 2px solid #2c3e50;
+                background: none;
+                box-shadow: none;
+            }
+
+            .trainer-details {
+                margin: 0 0 10px 0;
+                padding: 8px;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .task-list {
+                margin: 0 0 8px 0;
+                padding: 0;
+                box-shadow: none;
+                border: none;
+                break-inside: avoid;
+            }
+
+            .section-header {
+                background: none !important;
+                color: #000 !important;
+                padding: 8px 10px;
+                margin: 0;
+                font-size: 14pt;
+                letter-spacing: 1px;
+                word-spacing: 4px;
+                border-bottom: 1.5px solid #2c3e50;
+            }
+
+            .task-item {
+                padding: 5px 8px;
+                border: none;
+                margin: 0;
+            }
+
+            .task-title {
+                font-size: 12pt;
+                margin: 5px 0;
+                letter-spacing: 0.8px;
+                word-spacing: 3px;
+                color: #000;
+            }
+
+            .task-description {
+                font-size: 10pt;
+                margin: 3px 0;
+                color: #333 !important;
+            }
+
+            .task-details.with-sections {
+                border: none;
+                padding: 5px;
+                margin: 0;
+            }
+
+            .checkbox-list {
+                display: table !important;
+                width: 100% !important;
+            }
+
+            .checkbox-item {
+                display: table-row !important;
+            }
+
+            .checkbox-item::before {
+                display: table-cell !important;
+                content: "□";
+                width: 20px !important;
+                padding-left: 8px !important;
+                vertical-align: top !important;
+            }
+
+            .checkbox-item label {
+                display: table-cell !important;
+                padding: 4px 0 !important;
+                line-height: 1.4 !important;
+            }
+
+            .checkbox-item label,
+            .task-title,
+            .task-description,
+            .sub-section {
+                font-family: 'Arial Hebrew', 'David', Arial, sans-serif !important;
+                color: #000 !important;
+            }
+
+            .task-details.with-sections {
+                padding: 0 !important;
+                margin: 8px 0 !important;
+            }
+
+            .checkbox-list {
+                margin: 5px 0 !important;
+                padding: 0 !important;
+            }
+
+            .task-item,
+            .checkbox-item {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            .signature-section {
+                margin-top: 15px;
+                padding-top: 10px;
+                border-top: 1px solid #2c3e50;
+                break-inside: avoid;
+            }
+
+            .signature-container {
+                padding: 5px;
+            }
+
+            .signature-block {
+                margin: 0 10px;
+            }
+
+            input[type="checkbox"] {
+                display: none;
+            }
+
+            .checkbox-item::before {
+                content: "☐";
+                margin-left: 5px;
+                font-size: 12pt;
+            }
+
+            .main-title, 
+            .section-header, 
+            .task-title,
+            .task-description,
+            .checkbox-item label,
+            .sub-section {
+                text-align: right !important;
+                font-family: 'Arial Hebrew', 'David', Arial, sans-serif !important;
+                white-space: normal !important;
+            }
+
+            .main-title {
+                font-size: 20pt !important;
+                padding: 15px !important;
+                margin-bottom: 20px !important;
+                word-spacing: 0.4em !important;
+            }
+
+            .section-header {
+                font-size: 16pt !important;
+                padding: 10px !important;
+                margin-bottom: 10px !important;
+                word-spacing: 0.35em !important;
+            }
+
+            .task-title {
+                font-size: 13pt !important;
+                margin: 10px 0 !important;
+                word-spacing: 0.3em !important;
+            }
+
+            .task-description {
+                font-size: 11pt !important;
+                margin: 5px 0 !important;
+                word-spacing: 0.3em !important;
+            }
+
+            .checkbox-item {
+                margin: 4px 0;
+                padding: 2px 0;
+            }
+
+            .checkbox-item label {
+                font-size: 11pt !important;
+                display: inline-block !important;
+                padding: 2px 0 !important;
+                margin-right: 20px !important;
+                word-spacing: 0.3em !important;
+            }
+
+            .checkbox-item::before {
+                content: "□";
+                display: inline-block;
+                width: 16px;
+                margin-left: 8px;
+                font-size: 14pt;
+                vertical-align: middle;
+            }
+
+            .checkbox-item label span {
+                margin: 0 0.2em;
+            }
+
+            .sub-section {
+                font-size: 12pt !important;
+                padding: 8px 10px !important;
+                margin: 10px 0 5px 0 !important;
+                word-spacing: 0.3em !important;
+            }
+
+            .task-list {
+                margin-bottom: 20px !important;
+            }
+
+            .task-item {
+                margin-bottom: 10px !important;
+            }
+
+            .signature-section {
+                margin-top: 25px;
+                padding-top: 15px;
+                border-top: 1px solid #000;
+            }
+
+            .signature-block {
+                margin: 0 15px;
+                font-size: 11pt;
+            }
+
+            input[type="checkbox"],
+            .export-button,
+            .progress-container,
+            .clear-signature {
+                display: none !important;
+            }
+
+            body {
+                font-family: 'David', 'Times New Roman', serif !important;
+                line-height: 1.3;
+                color: #000;
+            }
+
+            .task-item,
+            .signature-section {
+                break-inside: avoid;
+            }
+
+            .checkbox-item label::after {
+                content: " ";
+                white-space: pre;
+            }
+
+            .checkbox-item label {
+                display: inline !important;
+                padding-left: 0.3em;
+            }
+
+            .task-title::after,
+            .task-description::after,
+            .sub-section::after {
+                content: " ";
+                white-space: pre;
+            }
+
+            .checkbox-list {
+                line-height: 1.6;
+            }
+
+            .main-title {
+                word-spacing: 0.4em !important;
+                padding-left: 0.4em;
+            }
+
+            .section-header {
+                word-spacing: 0.35em !important;
+                padding-left: 0.35em;
+            }
+
+            .checkbox-item::before {
+                display: inline-block;
+                min-width: 1.2em;
+                text-align: center;
+            }
+        }
+
+        .sub-section {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border-right: 3px solid #3498db;
+        }
+
+        .sub-section:first-child {
+            margin-top: 0;
+        }
+
+        .task-details.with-sections {
+            background: white;
+            padding: 12px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .task-details.with-sections ul {
+            background: #f8f9fa;
+            padding: 8px 25px 8px 8px;
+            border-radius: 4px;
+            margin: 5px 0 12px 0;
+        }
+
+        .task-details.with-sections li {
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .task-details.with-sections li:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-details.with-sections li::before {
+            content: "•";
+            color: #3498db;
+            font-weight: bold;
+            position: absolute;
+            right: -15px;
+        }
+
+        .checkbox-list {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .checkbox-item label {
+            margin-right: 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="exportToPDF()" class="export-button">
+        📥 ייצוא ל-PDF
+    </button>
+
+    <div id="pdf-content">
+        <div class="main-title">נוהל חפיפה גרייט שייפ</div>
+        
+        <div class="trainer-details">
+            <h2>פרטי החפיפה</h2>
+            
+            <label>שם המדריך החדש</label>
+            <input type="text" id="newTrainer" placeholder="הכנס שם מלא">
+            
+            <label>שם המדריך החונך</label>
+            <input type="text" id="mentorTrainer" placeholder="הכנס שם מלא">
+        </div>
+
+        <div class="task-list">
+            <div class="section-header">היכרות ואוריינטציה</div>
+            <div class="task-item">
+                <div class="task-content">
+                    <div class="task-title">קליטת עובד והיכרות עם החברה</div>
+                    <div class="task-description">השלמת תהליך הקליטה הפורמלי והיכרות עם החברה</div>
+                    <div class="task-details with-sections">
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task1_1">
+                                <label for="task1_1">מילוי והחתמת טפסים: טופס 101, הצהרת נסיעות, חוזה העסקה</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task1_2">
+                                <label for="task1_2">למידת המבנה הארגוני של החברה</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task1_3">
+                                <label for="task1_3">קבלת מידע על תנאי העסקה, זכויות וחובות</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-item">
+                <div class="task-content">
+                    <div class="task-title">היכרות עם המועדון והנהלים</div>
+                    <div class="task-description">סיור מקיף במועדון ולמידת נהלי העבודה</div>
+                    <div class="task-details with-sections">
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task2_1">
+                                <label for="task2_1">סיור מודרך בכל אזורי המועדון</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task2_2">
+                                <label for="task2_2">למידת נהלי העבודה היומיומיים</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task2_3">
+                                <label for="task2_3">הכרת כללי המשמעת וקוד הלבוש</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task2_4">
+                                <label for="task2_4">תיאום ציפיות עם המנהל הישיר</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task2_5">
+                                <label for="task2_5">קבלת הסבר על שגרת העבודה היומית</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task2_6">
+                                <label for="task2_6">הכרת צוות העובדים ובעלי תפקידים</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-item">
+                <div class="task-content">
+                    <div class="task-title">מוצרים ומדיניות שירות</div>
+                    <div class="task-description">היכרות עם המוצרים והשירותים של המועדון</div>
+                    <div class="task-details with-sections">
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task3_1">
+                                <label for="task3_1">למידת מערכת ה-GSP ותפעולה</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task3_2">
+                                <label for="task3_2">הכרת המוצרים הנלווים הנמכרים במועדון</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task3_3">
+                                <label for="task3_3">קבלת הדרכה על קולקציית הביגוד</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task3_4">
+                                <label for="task3_4">למידת מדיניות השירות ושפת השירות המועדפת</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task3_5">
+                                <label for="task3_5">הכרת נהלי המכירה והשירות</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-list">
+            <div class="section-header">היכרות עם תכני התפקיד</div>
+            <div class="task-item">
+                <div class="task-content">
+                    <div class="task-title">הכרות עם חדר הכושר</div>
+                    <div class="task-details with-sections">
+                        <div class="sub-section">משמרת פתיחה</div>
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_1">
+                                <label for="task4_1">נטרול אזעקה</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_2">
+                                <label for="task4_2">הדלקת אורות ומזגנים</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_3">
+                                <label for="task4_3">הפעלת מחשב בקרת שערים</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_4">
+                                <label for="task4_4">צ'ק ליסט פתיחה</label>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">משמרת סגירה</div>
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_5">
+                                <label for="task4_5">הפעלת אזעקה</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_6">
+                                <label for="task4_6">כיבוי אורות ומזגנים</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_7">
+                                <label for="task4_7">צ'ק ליסט סגירה</label>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">ציוד חדר הכושר</div>
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_8">
+                                <label for="task4_8">הכרת כל מכשירי הכוח והתפעול שלהם</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_9">
+                                <label for="task4_9">מיקום ותפעול תיק עזרה ראשונה ודפיברילטור</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task4_10">
+                                <label for="task4_10">למידת נהלי בטיחות ופרוטוקולי חירום</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-item">
+                <div class="task-content">
+                    <div class="task-title">תהליכי עבודה</div>
+                    <div class="task-description">צפייה והתנסות בתהליכי העבודה המרכזיים</div>
+                    <div class="task-details with-sections">
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task5_1">
+                                <label for="task5_1">למידת בניית תוכניות אימון מותאמות אישית</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task5_2">
+                                <label for="task5_2">צפייה בקבלת מתאמנים חדשים</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task5_3">
+                                <label for="task5_3">הכרת תהליך בניית תוכנית אימונים</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task5_4">
+                                <label for="task5_4">למידת מערכת התיעוד והמעקב</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-list">
+            <div class="section-header">השתלבות אקטיבית</div>
+            <div class="task-item">
+                <div class="task-content">
+                    <div class="task-title">התנסות מעשית</div>
+                    <div class="task-description">עבודה פעילה בחדר הכושר תחת הנחייה</div>
+                    <div class="task-details with-sections">
+                        <div class="checkbox-list">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task6_1">
+                                <label for="task6_1">ביצוע עבודה פעילה בחדר הכושר</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task6_2">
+                                <label for="task6_2">מתן מענה למתאמנים תחת פיקוח</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task6_3">
+                                <label for="task6_3">התנסות בפתיחה וסגירת משמרת</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task6_4">
+                                <label for="task6_4">עזרה למתאמנים בשימוש במכשירים</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="task6_5">
+                                <label for="task6_5">תרגול בניית תוכניות אימון</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="signature-section">
+        <div class="signature-container">
+            <div class="signature-block">
+                <div>חתימת המדריך החדש</div>
+                <div class="signature-line">
+                    <canvas class="signature-canvas" id="newTrainerSignature"></canvas>
+                </div>
+                <div id="newTrainerName"></div>
+                <button class="clear-signature" onclick="clearSignature('newTrainerSignature')">נקה חתימה</button>
+            </div>
+            <div class="signature-block">
+                <div>חתימת המדריך החונך</div>
+                <div class="signature-line">
+                    <canvas class="signature-canvas" id="mentorTrainerSignature"></canvas>
+                </div>
+                <div id="mentorTrainerName"></div>
+                <button class="clear-signature" onclick="clearSignature('mentorTrainerSignature')">נקה חתימה</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="completed-text"></div>
+    </div>
+
+    <script>
+        document.getElementById('newTrainer').addEventListener('input', function() {
+            document.getElementById('newTrainerName').textContent = this.value;
+        });
+        
+        document.getElementById('mentorTrainer').addEventListener('input', function() {
+            document.getElementById('mentorTrainerName').textContent = this.value;
+        });
+
+        function initSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            function resizeCanvas() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function draw(e) {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.type === 'touchmove' ? e.touches[0].clientX : e.clientX) - rect.left;
+                const y = (e.type === 'touchmove' ? e.touches[0].clientY : e.clientY) - rect.top;
+
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                [lastX, lastY] = [x, y];
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                [lastX, lastY] = [e.clientX - rect.left, e.clientY - rect.top];
+            });
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseout', () => isDrawing = false);
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                [lastX, lastY] = [touch.clientX - rect.left, touch.clientY - rect.top];
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                draw(e);
+            });
+            canvas.addEventListener('touchend', () => isDrawing = false);
+        }
+
+        function clearSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        initSignature('newTrainerSignature');
+        initSignature('mentorTrainerSignature');
+
+        function prepareForPrint() {
+            document.querySelectorAll('.checkbox-item label, .task-title, .task-description').forEach(element => {
+                const text = element.textContent;
+                const words = text.split(' ');
+                element.innerHTML = words.join('&#x200c; ');
+            });
+        }
+
+        function exportToPDF() {
+            prepareForPrint();
+            const exportButton = document.querySelector('.export-button');
+            const progressContainer = document.querySelector('.progress-container');
+            const clearButtons = document.querySelectorAll('.clear-signature');
+            
+            [exportButton, progressContainer, ...clearButtons].forEach(el => el.style.display = 'none');
+            
+            const options = {
+                margin: [15, 15, 15, 15],
+                filename: 'נוהל_חפיפה_גרייט_שייפ.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    scrollY: 0,
+                    windowWidth: document.documentElement.scrollWidth,
+                    backgroundColor: '#ffffff'
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: true
+                },
+                pagebreak: { mode: 'avoid-all' }
+            };
+
+            const content = document.getElementById('pdf-content');
+            
+            document.body.classList.add('printing');
+            
+            html2pdf().from(content).set(options).save()
+                .then(() => {
+                    [exportButton, progressContainer, ...clearButtons].forEach(el => el.style.display = 'block');
+                    document.body.classList.remove('printing');
+                });
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percentage = (checked / total) * 100;
+            
+            document.querySelector('.progress-fill').style.width = percentage + '%';
+            document.querySelector('.completed-text').textContent = 
+                `הושלמו ${checked} מתוך ${total} משימות (${Math.round(percentage)}%)`;
+        }
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
+        });
+
+        updateProgress();
+    </script>
+</body>
+</html>
